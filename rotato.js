@@ -1,5 +1,7 @@
-function Rotator(imgIn){
-   this.imgIn = imgIn;
+class Rotator{
+   constructor (imgIn) {
+      this.imgIn = imgIn;
+   }
 }
 
 export { Rotator };

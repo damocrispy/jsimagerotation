@@ -1,5 +1,5 @@
-function rotate(){
-   
+function Rotator(imgIn){
+   this.imgIn = imgIn;
 }
 
-export { rotate };
+export { Rotator };

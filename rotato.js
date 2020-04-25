@@ -6,12 +6,12 @@ class Rotator{
    matMult(a, b){
 
       // Matrix multiplication. A matrix is represented as an array of arays.
-
+      
       // Dimensions of input matrices.
-      let arows = a.size;  // Number of rows.
-      let acols = a[0].size;  // Number of columns.
-      let brows = b.size;
-      let bcols = b[0].size;
+      let arows = a.length;  // Number of rows.
+      let acols = a[0].length;  // Number of columns.
+      let brows = b.length;
+      let bcols = b[0].length;
 
       if(acols != brows){
          console.log('Cannot multiply matrices.');
@@ -20,11 +20,11 @@ class Rotator{
       }
 
       // Build empty resulting matrix of correct dimensions.
-      let result = [];
-      let emptyRow = new Array(bcols);
+      let result = new Array(arows);
       for(let row = 0; row < arows; row++){
-         result.push(emptyRow);
+         result[row] = new Array(bcols);
       }
+      console.log(result);
 
       // For every element in the resulting matrix calculate its value.
       // Similar to what this guy did: https://www.codewithc.com/matrix-multiplication-in-c/
@@ -32,11 +32,11 @@ class Rotator{
       for(let r = 0; r < arows; r++){
          for(let c = 0; c < bcols; c++){
             for(let k = 0; k < acols; k++){
-               element = element + a[r][k] * b[k][c];
-               result[r][c] = element;
+               element += a[r][k] * b[k][c];            
             }
-
+            result[r][c] = element;
             element = 0;
+            console.log(result);
          }
       }
 
@@ -71,6 +71,8 @@ class Rotator{
 
       // Loop structure inspired by: https://stackoverflow.com/a/9138593
 
+      let prod = this.matMult([[1, 2], [3, 4]], [[5, 6], [7, 8]]);
+      console.log(prod);
       
       for(let y = 0; y < height; y++){
          for(let x = 0; x < width; x++){
@@ -78,7 +80,7 @@ class Rotator{
             let pxlCoord = [[x], [y], [1]];
 
             // 1. Translate pixel so that rotation is about origin.
-            this.matMult(cntr, pxlCoord);
+            //this.matMult(cntr, pxlCoord);
 
             // 2. Rotate pixel about origin.
             // 3. Translate pixel back to original position.

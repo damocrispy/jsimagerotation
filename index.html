@@ -3,10 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giz a job, lads.</title>
 </head>
 <body>
     <h1>Running!</h1>
-    <script type="application/javascript" src="http://localhost:5500/accenture/rotato.js"></script>
-    <script type="application/javascript" src="http://localhost:5500/accenture/prep.js"></script>
+    <!-- <script type="application/javascript" src="http://localhost:5500/accenture/rotato.js"></script>
+    <script type="application/javascript" src="http://localhost:5500/accenture/prep.js"></script> -->
+    <script>
+        //  Input canvas.
+        let cnvsIn = document.createElement('canvas');
+        //  Set to dimensions of test image.
+        cnvsIn.width = 393;
+        cnvsIn.height = 501;
+        let cntxIn = cnvsIn.getContext('2d');
+        testImg = new Image();
+        testImg.onload = function() {cntxIn.drawImage(testImg, 0, 0)};
+        testImg.src = 'fish.png';
+        document.body.appendChild(cnvsIn);
+        
+        //  Output canvas.
+        let cnvsOut = document.createElement('canvas');
+        cnvsOut.width = 393;
+        cnvsOut.height = 501;
+        let cntxOut = cnvsOut.getContext('2d');
+        
+        let imgDataIn = cntxIn.getImageData(0, 0, 393, 501);
+
+        //  Test content of ImageData.
+        let fails = 0;
+        for(let i = 0; i<imgDataIn.data.length; i++){
+            if(imgDataIn.data[i] == 0){
+                fails++;
+            }
+        }
+        console.log(fails);
+        console.log(imgDataIn.data.length);
+
+        imgDataIn.onload = function() {cntxOut.putImageData(imgDataIn, 0, 0);}
+        document.body.appendChild(cnvsOut);
+    </script>
 </body>
 </html>

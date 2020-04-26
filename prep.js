@@ -1,6 +1,6 @@
 /* import Rotator from "rotato"; */
 
-const angle = (30*Math.PI)/180;
+const angle = (90*Math.PI)/180;
 
 //  Create a new canvas for test image input. Get it's 2D context.
 let cnvsIn = document.createElement('canvas');
@@ -15,7 +15,7 @@ cnvsIn.height = 501;
 testImg.onload = function() {cntxIn.drawImage(testImg, 0, 0)};
 document.body.appendChild(cnvsIn);
 
-//  Pull an ImageData object from the canvas containing the data of thetest image.
+//  Pull an ImageData object from the canvas containing the data of the test image.
 //  This will be the imput to the image rotation algorithm.
 let imgDataIn = cntxIn.getImageData(0, 0, cnvsIn.width, cnvsIn.height);
 
@@ -26,10 +26,10 @@ let cntxOut = cnvsOut.getContext('2d');
 //  Resize canvas to fit rotated image and add to HTML page.
 cnvsOut.width = (cnvsIn.height*Math.sin(angle)) + (cnvsIn.width*Math.cos(angle));
 cnvsOut.height = (cnvsIn.width*Math.sin(angle)) + (cnvsIn.height*Math.cos(angle));
-document.body.appendChild(cnvsOut);
 
 //  Run rotation algorithm on the ImageData object.
 imgRot = new Rotator(imgDataIn);
 imgDataOut = imgRot.rotate(angle);
-
+console.log(imgDataOut);
 cntxOut.putImageData(imgDataOut, 0, 0);
+document.body.appendChild(cnvsOut);

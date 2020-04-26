@@ -24,7 +24,6 @@ class Rotator{
       for(let row = 0; row < arows; row++){
          result[row] = new Array(bcols);
       }
-      console.log(result);
 
       // For every element in the resulting matrix calculate its value.
       // Similar to what this guy did: https://www.codewithc.com/matrix-multiplication-in-c/
@@ -36,7 +35,6 @@ class Rotator{
             }
             result[r][c] = element;
             element = 0;
-            console.log(result);
          }
       }
 
@@ -51,7 +49,7 @@ class Rotator{
       This is dicussed further at the links below.
       https://pythontic.com/image-processing/pillow/rotate
        */
-      console.log(this.imgIn.data);
+
       let start = performance.now();
 
       this.theta = angle;
@@ -67,23 +65,38 @@ class Rotator{
       // Coordinates of centre of image. Structure as a matrix i.e. array of arrays.
       let cntrX = width / 2;
       let cntrY = height / 2;
-      let cntr = [[cntrX], [cntrY], [1]];
-
-      // Loop structure inspired by: https://stackoverflow.com/a/9138593
-
-      let prod = this.matMult([[1, 2], [3, 4]], [[5, 6], [7, 8]]);
-      console.log(prod);
       
       for(let y = 0; y < height; y++){
          for(let x = 0; x < width; x++){
 
+            // Coordinates of a pixel in the output image.
             let pxlCoord = [[x], [y], [1]];
 
-            // 1. Translate pixel so that rotation is about origin.
-            //this.matMult(cntr, pxlCoord);
+            // Form transformation matrices.
+            let transToOrigin = [[1, 0, -cntrX],
+               [0, 1, -cntrY],
+               [0, 0, 1]];
+
+            let rotMat = [[Math.cos(this.theta), -Math.sin(this.theta), 0],
+               [Math.sin(this.theta), Math.cos(this.theta), 0],
+               [0, 0, 1]];
+
+            let transFromOrigin = [[1, 0, cntrX],
+               [0, 1, cntrY],
+               [0, 0, 1]];
+
+            // 1. Translate pixel (vector) so that rotation is about origin.
+            let pxlTrans = this.matMult(transToOrigin, pxlCoord);
 
             // 2. Rotate pixel about origin.
-            // 3. Translate pixel back to original position.
+            let pxlRot = this.matMult(rotMat, pxlTrans);
+
+            // 3. Reverse original translation.
+            let pxlSrc = this.matMult(transFromOrigin, pxlRot);
+
+            // 4. Round to nearest pixel. This is the source of the current pixel.
+            pxlSrc[0] = Math.round(pxlSrc[0]);
+            pxlSrc[1] = Math.round(pxlSrc[1]);
 
             /* // 1. Distance of current pixel from image centre.
             let dist = Math.hypot((x - cntrX), (y - cntrY));
@@ -97,10 +110,12 @@ class Rotator{
             let srcY = Math.round( dist * Math.sin(ro) ); */
 
             // Assign values from nearest matching source pixel to current output pixel
-            /* for(let i = 0; i < 4; i++){
-               arrayOut[((x * width) + y) * 4 + i] = this.imgIn.data[((srcX * width) + srcY) * 4 + 0];
-            } */
+            for(let i = 0; i < 4; i++){
+               arrayOut[((y * width) + x) * 4 + i] = this.imgIn.data[((pxlSrc[1] * width) + pxlSrc[0]) * 4 + 0];
+            }
             
+
+            // Loop structure inspired by: https://stackoverflow.com/a/9138593
             // Find four byte value of a pixel.
 /*             this.imgOut.data[((x * width) + y) * 4 + 0]  // R
             this.imgOut.data[((x * width) + y) * 4 + 1]  // G
@@ -108,9 +123,6 @@ class Rotator{
             this.imgOut.data[((x * width) + y) * 4 + 3]  // A */
          }
       }
-      console.log(arrayOut);
-      console.log(width);
-      console.log(height);
       // Create output ImageData object with reconstructed data and correct dimensions.
       this.imgOut = new ImageData(arrayOut, width, height);
       

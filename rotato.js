@@ -13,7 +13,7 @@ class Rotator{
       let brows = b.length;
       let bcols = b[0].length;
 
-      if(acols != brows){
+      if(acols != brows) {
          console.log('Cannot multiply matrices.');
          console.log('Check dimensions.');
          return;
@@ -21,16 +21,16 @@ class Rotator{
 
       // Build empty resulting matrix of correct dimensions.
       let result = new Array(arows);
-      for(let row = 0; row < arows; row++){
+      for(let row = 0; row < arows; row++) {
          result[row] = new Array(bcols);
       }
 
       // For every element in the resulting matrix calculate its value.
       // Similar to what this guy did: https://www.codewithc.com/matrix-multiplication-in-c/
       let element = 0;
-      for(let r = 0; r < arows; r++){
-         for(let c = 0; c < bcols; c++){
-            for(let k = 0; k < acols; k++){
+      for(let r = 0; r < arows; r++) {
+         for(let c = 0; c < bcols; c++) {
+            for(let k = 0; k < acols; k++) {
                element += a[r][k] * b[k][c];            
             }
             result[r][c] = element;
@@ -59,6 +59,7 @@ class Rotator{
       let height = (this.imgIn.width*Math.sin(this.theta)) + (this.imgIn.height*Math.cos(this.theta));
       width = Math.round(width);
       height = Math.round(height);
+      
       // Create empty Uint8ClampedArray representing data of ImageData output object.
       let arrayOut = new Uint8ClampedArray(width * height * 4);
       
@@ -66,8 +67,8 @@ class Rotator{
       let cntrX = width / 2;
       let cntrY = height / 2;
       
-      for(let y = 0; y < height; y++){
-         for(let x = 0; x < width; x++){
+      for(let x = 0; x < height; x++) {
+         for(let y = 0; y < width; y++) {
 
             // Coordinates of a pixel in the output image.
             let pxlCoord = [[x], [y], [1]];
@@ -98,20 +99,15 @@ class Rotator{
             pxlSrc[0] = Math.round(pxlSrc[0]);
             pxlSrc[1] = Math.round(pxlSrc[1]);
 
-            /* // 1. Distance of current pixel from image centre.
-            let dist = Math.hypot((x - cntrX), (y - cntrY));
-            // 2. Angle of current pixel form horizontal.
-            let psi = Math.atan(y/x);
-            // 3. Angle of source pixel from horizontal.
-            let ro = this.theta - psi;
-            // 4. X-coordinate of source pixel. Rounded to nearest pixel.
-            let srcX = Math.round( dist * Math.cos(ro) );
-            // 5. Y-coordinate of source pixel. Rounded to nearest pixel.
-            let srcY = Math.round( dist * Math.sin(ro) ); */
-
             // Assign values from nearest matching source pixel to current output pixel
-            for(let i = 0; i < 4; i++){
-               arrayOut[((y * width) + x) * 4 + i] = this.imgIn.data[((pxlSrc[1] * width) + pxlSrc[0]) * 4 + 0];
+            for(let i = 0; i < 4; i++) {
+               // If calculated source values fall outside source image, set them to black.
+               if(x >= 0 && x < width && y >= 0 && y < height) {
+                  arrayOut[((y * width) + x) * 4 + i] = this.imgIn.data[((pxlSrc[1] * width) + pxlSrc[0]) * 4 + 0];
+               } else {
+                  arrayOut[((y * width) + x) * 4 + i]
+               }
+               
             }
             
 

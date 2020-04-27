@@ -53,75 +53,67 @@ class Rotator{
       let start = performance.now();
 
       this.theta = angle;
-
+      
       // Find dimensions of output image.
       let width = (this.imgIn.height*Math.sin(this.theta)) + (this.imgIn.width*Math.cos(this.theta));
       let height = (this.imgIn.width*Math.sin(this.theta)) + (this.imgIn.height*Math.cos(this.theta));
-      width = Math.round(width);
-      height = Math.round(height);
-      
+      width = Math.floor(width);
+      height = Math.floor(height);
+
       // Create empty Uint8ClampedArray representing data of ImageData output object.
       let arrayOut = new Uint8ClampedArray(width * height * 4);
       
       // Coordinates of centre of image. Structure as a matrix i.e. array of arrays.
       let cntrX = width / 2;
       let cntrY = height / 2;
-      
-      for(let x = 0; x < height; x++) {
-         for(let y = 0; y < width; y++) {
+
+      // Form transformation matrices.
+      // 1. Translate pixel (vector) so that rotation is about origin.
+      let transToOrigin = [[1, 0, -cntrX],
+         [0, 1, -cntrY],
+         [0, 0, 1]];
+
+      // 2. Rotate pixel about origin.
+      let rotMat = [[Math.cos(this.theta), Math.sin(this.theta), 0],
+         [-Math.sin(this.theta), Math.cos(this.theta), 0],
+         [0, 0, 1]];
+
+      // 3. Reverse original translation.
+      let transFromOrigin = [[1, 0, this.imgIn.width / 2],
+         [0, 1, this.imgIn.height / 2],
+         [0, 0, 1]];
+
+      // 4. Multiply the above transformations to find combined transformation matrix.
+      let transRot = this.matMult(rotMat, transToOrigin);
+      let transMat = this.matMult(transFromOrigin, transRot);
+     
+      for(let y = 0; y < height; y++) {
+         for(let x = 0; x < width; x++) {
 
             // Coordinates of a pixel in the output image.
-            let pxlCoord = [[x], [y], [1]];
+            let pxlOut = [[x], [y], [1]];
+            // Coordinates after rotation.
+            var pxlIn = this.matMult(transMat, pxlOut);
 
-            // Form transformation matrices.
-            let transToOrigin = [[1, 0, -cntrX],
-               [0, 1, -cntrY],
-               [0, 0, 1]];
-
-            let rotMat = [[Math.cos(this.theta), -Math.sin(this.theta), 0],
-               [Math.sin(this.theta), Math.cos(this.theta), 0],
-               [0, 0, 1]];
-
-            let transFromOrigin = [[1, 0, cntrX],
-               [0, 1, cntrY],
-               [0, 0, 1]];
-
-            // 1. Translate pixel (vector) so that rotation is about origin.
-            let pxlTrans = this.matMult(transToOrigin, pxlCoord);
-
-            // 2. Rotate pixel about origin.
-            let pxlRot = this.matMult(rotMat, pxlTrans);
-
-            // 3. Reverse original translation.
-            let pxlSrc = this.matMult(transFromOrigin, pxlRot);
-
-            // 4. Round to nearest pixel. This is the source of the current pixel.
-            pxlSrc[0] = Math.round(pxlSrc[0]);
-            pxlSrc[1] = Math.round(pxlSrc[1]);
-
+            // Round to nearest pixel. This is the source of the current pixel.
+            pxlIn[0] = Math.round(pxlIn[0]);
+            pxlIn[1] = Math.round(pxlIn[1]);
+            
             // Assign values from nearest matching source pixel to current output pixel
             for(let i = 0; i < 4; i++) {
                // If calculated source values fall outside source image, set them to black.
-               if(x >= 0 && x < width && y >= 0 && y < height) {
-                  arrayOut[((y * width) + x) * 4 + i] = this.imgIn.data[((pxlSrc[1] * width) + pxlSrc[0]) * 4 + 0];
+               if(pxlIn[0] >= 0 && pxlIn[0] < this.imgIn.width && pxlIn[1] >= 0 && pxlIn[1] < this.imgIn.height) {
+                  arrayOut[((y * width) + x) * 4 + i] = this.imgIn.data[((pxlIn[1] * this.imgIn.width) + pxlIn[0]) * 4 + i];
                } else {
-                  arrayOut[((y * width) + x) * 4 + i]
+                  arrayOut[((y * width) + x) * 4 + i] = 0;
                }
-               
             }
-            
-
-            // Loop structure inspired by: https://stackoverflow.com/a/9138593
-            // Find four byte value of a pixel.
-/*             this.imgOut.data[((x * width) + y) * 4 + 0]  // R
-            this.imgOut.data[((x * width) + y) * 4 + 1]  // G
-            this.imgOut.data[((x * width) + y) * 4 + 2]  // B
-            this.imgOut.data[((x * width) + y) * 4 + 3]  // A */
          }
       }
+      
       // Create output ImageData object with reconstructed data and correct dimensions.
       this.imgOut = new ImageData(arrayOut, width, height);
-      
+
       let finish = performance.now();
       console.log((finish - start) + 'ms to execute.');
 

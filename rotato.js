@@ -55,8 +55,8 @@ class Rotator{
       this.theta = angle;
       
       // Find dimensions of output image.
-      let width = (this.imgIn.height*Math.sin(this.theta)) + (this.imgIn.width*Math.cos(this.theta));
-      let height = (this.imgIn.width*Math.sin(this.theta)) + (this.imgIn.height*Math.cos(this.theta));
+      let width = Math.abs(this.imgIn.height*Math.sin(this.theta)) + Math.abs(this.imgIn.width*Math.cos(this.theta));
+      let height = Math.abs(this.imgIn.width*Math.sin(this.theta)) + Math.abs(this.imgIn.height*Math.cos(this.theta));
       width = Math.floor(width);
       height = Math.floor(height);
 

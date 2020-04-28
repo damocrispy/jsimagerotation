@@ -1,6 +1,6 @@
 /* import Rotator from "rotato"; */
 
-const angle = (120*Math.PI)/180;
+const angle = (135*Math.PI)/180;
 
 //  Create a new canvas for test image input. Get it's 2D context.
 let cnvsIn = document.createElement('canvas');
@@ -13,10 +13,10 @@ cnvsIn.height = 501;
 let cnvsOut = document.createElement('canvas');
 let cntxOut = cnvsOut.getContext('2d');
 //  Resize canvas to fit rotated image and add to HTML page.
-cnvsOut.width = (cnvsIn.height*Math.sin(angle)) + (cnvsIn.width*Math.cos(angle));
-cnvsOut.height = (cnvsIn.width*Math.sin(angle)) + (cnvsIn.height*Math.cos(angle));
-cnvsOut.width = Math.abs(Math.round(cnvsOut.width));
-cnvsOut.height = Math.abs(Math.round(cnvsOut.height));
+cnvsOut.width = Math.abs(cnvsIn.height*Math.sin(angle)) + Math.abs(cnvsIn.width*Math.cos(angle));
+cnvsOut.height = Math.abs(cnvsIn.width*Math.sin(angle)) + Math.abs(cnvsIn.height*Math.cos(angle));
+cnvsOut.width = Math.round(cnvsOut.width);
+cnvsOut.height = Math.round(cnvsOut.height);
 
 //  Create an image object.
 testImg = new Image();

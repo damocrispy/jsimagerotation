@@ -48,10 +48,23 @@ class Rotator{
       and calculating it's most likely input pixel, then copying RBA data from input to output.
       This is dicussed further at the links below.
       https://pythontic.com/image-processing/pillow/rotate
+
+      Mapping is done by first translating a pixel (i.e. a vector) such that it is in a new
+      coordinate frame where the rotation required will be aboubt the origin. Rotation is then
+      carried out. Resulting vector is then translated back its position relative to the centre
+      of the imput image.
+      More on rotation and translation matrices here:
+      https://en.wikipedia.org/wiki/Rotation_(mathematics)
+      https://en.wikipedia.org/wiki/Translation_(geometry)
+
+      Matrices are left-multiplied to create a single trandformation matrix. More on this
+      combination of matrices to model a series of transformations here:
+      https://www.mauriciopoppe.com/notes/computer-graphics/transformation-matrices/combining-transformations/
        */
 
       let start = performance.now();
 
+      // Input angle. Required to be in radians.
       this.theta = angle;
       
       // Find dimensions of output image.
@@ -63,7 +76,7 @@ class Rotator{
       // Create empty Uint8ClampedArray representing data of ImageData output object.
       let arrayOut = new Uint8ClampedArray(width * height * 4);
       
-      // Coordinates of centre of image. Structure as a matrix i.e. array of arrays.
+      // Coordinates of centre of image.
       let cntrX = width / 2;
       let cntrY = height / 2;
 
@@ -87,21 +100,22 @@ class Rotator{
       let transRot = this.matMult(rotMat, transToOrigin);
       let transMat = this.matMult(transFromOrigin, transRot);
      
+      // For each pixel in output image, find corresponding pixel in input and copy pixel value.
       for(let y = 0; y < height; y++) {
          for(let x = 0; x < width; x++) {
 
             // Coordinates of a pixel in the output image.
             let pxlOut = [[x], [y], [1]];
-            // Coordinates after rotation.
+            // Coordinates after transformation.
             var pxlIn = this.matMult(transMat, pxlOut);
 
             // Round to nearest pixel. This is the source of the current pixel.
             pxlIn[0] = Math.round(pxlIn[0]);
             pxlIn[1] = Math.round(pxlIn[1]);
             
-            // Assign values from nearest matching source pixel to current output pixel
+            // Assign values from source pixel to current output pixel.
             for(let i = 0; i < 4; i++) {
-               // If calculated source values fall outside source image, set them to black.
+               // If calculated source pixels fall outside source image, set values to 0.
                if(pxlIn[0] >= 0 && pxlIn[0] < this.imgIn.width && pxlIn[1] >= 0 && pxlIn[1] < this.imgIn.height) {
                   arrayOut[((y * width) + x) * 4 + i] = this.imgIn.data[((pxlIn[1] * this.imgIn.width) + pxlIn[0]) * 4 + i];
                } else {

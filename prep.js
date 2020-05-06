@@ -1,7 +1,17 @@
-/* import Rotator from "rotato"; */
+/* 
+Prepare the input for the image rotation algorithm.
+This file will pull an image fromt he HTML page,
+pull out the ImageData object that is required
+as an input to the algorithm in the project spec
+and then pass it as an argument to the rotation algorithm.
+This algorithm is executed by a member function of a
+'Rotator' class defined in the 'rotato.js' file.
+The algorithm returns an ImageData object which is pushed to
+the HTML page thus showing input and output side-by-side.
+ */
 
 //  Input angle. Convert to radians for rotation algorithm.
-const angle = (135*Math.PI)/180;
+const angle = (-30*Math.PI)/180;
 
 //  Create a new canvas for test image input. Get it's 2D context.
 let cnvsIn = document.createElement('canvas');
@@ -20,7 +30,7 @@ cnvsOut.width = Math.round(cnvsOut.width);
 cnvsOut.height = Math.round(cnvsOut.height);
 
 //  Create an image object.
-testImg = new Image();
+let testImg = new Image();
 //  When test image is loaded wait for it to load before continuing.
 testImg.onload = function() {
     //  Push the Image object to the input canvas.
@@ -31,12 +41,13 @@ testImg.onload = function() {
     let imgDataIn = cntxIn.getImageData(0, 0, cnvsIn.width, cnvsIn.height);
 
     //  Run rotation algorithm on the ImageData object.
-    imgRot = new Rotator(imgDataIn);
-    imgDataOut = imgRot.rotate(angle);
+    let imgRot = new Rotator(imgDataIn);
+    let imgDataOut = imgRot.rotate(angle);
 
     //  Push resulting ImageData object to the output canvas.
     cntxOut.putImageData(imgDataOut, 0, 0);
     document.body.appendChild(cnvsOut);
+
 };
 
 //  Load test image from file to the Image.

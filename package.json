@@ -4,7 +4,8 @@
   "description": "Image rotation project for Accenture.",
   "main": "prep.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "testwatch": "jest --watchAll"
   },
   "repository": {
     "type": "git",

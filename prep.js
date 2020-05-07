@@ -11,7 +11,7 @@ the HTML page thus showing input and output side-by-side.
  */
 
 //  Input angle. Convert to radians for rotation algorithm.
-const angle = (-30*Math.PI)/180;
+const angle = (22.5*Math.PI)/180;
 
 //  Create a new canvas for test image input. Get it's 2D context.
 let cnvsIn = document.createElement('canvas');
@@ -20,14 +20,16 @@ let cntxIn = cnvsIn.getContext('2d');
 cnvsIn.width = 393;
 cnvsIn.height = 501;
 
+let imgRot = new Rotator(new ImageData(cnvsIn.width, cnvsIn.height));
+
 //  Create a new canvas for test image output. Get it's 2D context.
 let cnvsOut = document.createElement('canvas');
 let cntxOut = cnvsOut.getContext('2d');
+
 //  Resize canvas to fit rotated image.
-cnvsOut.width = Math.abs(cnvsIn.height*Math.sin(angle)) + Math.abs(cnvsIn.width*Math.cos(angle));
-cnvsOut.height = Math.abs(cnvsIn.width*Math.sin(angle)) + Math.abs(cnvsIn.height*Math.cos(angle));
-cnvsOut.width = Math.round(cnvsOut.width);
-cnvsOut.height = Math.round(cnvsOut.height);
+let newDims = imgRot.resize(cnvsIn.width, cnvsIn.height, angle);
+cnvsOut.width = newDims[0];
+cnvsOut.height = newDims[1];
 
 //  Create an image object.
 let testImg = new Image();
@@ -41,7 +43,8 @@ testImg.onload = function() {
     let imgDataIn = cntxIn.getImageData(0, 0, cnvsIn.width, cnvsIn.height);
 
     //  Run rotation algorithm on the ImageData object.
-    let imgRot = new Rotator(imgDataIn);
+    //let imgRot = new Rotator(imgDataIn);
+    imgRot.imgIn = imgDataIn;
     let imgDataOut = imgRot.rotate(angle);
 
     //  Push resulting ImageData object to the output canvas.

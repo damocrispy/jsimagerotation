@@ -5,7 +5,9 @@ class Rotator {
    }
 
    rotate = function (theta) {
-      /*
+      
+   };
+      /* 
       This rotation algorithm is based on the idea of inverse mapping - taking an output pixel
       and calculating it's most likely input pixel, then copying RBA data from input to output.
       This is dicussed further at the links below.
@@ -23,7 +25,7 @@ class Rotator {
       combination of matrices to model a series of transformations here:
       https://www.mauriciopoppe.com/notes/computer-graphics/transformation-matrices/combining-transformations/
        */
-      let start = performance.now();
+   /*  let start = performance.now();
    
       // Find dimensions of output image.
       let newDims = this.resize(this.imgIn.width, this.imgIn.height, theta);
@@ -118,6 +120,7 @@ class Rotator {
       }
       return result;
    };
+   */
 
    resize = function (width, height, angle) {
       // Find minimum enclosing dimensions of rotated rectangle.

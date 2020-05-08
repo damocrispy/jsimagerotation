@@ -11,7 +11,7 @@ the HTML page thus showing input and output side-by-side.
  */
 
 //  Input angle. Convert to radians for rotation algorithm.
-const angle = (22.5*Math.PI)/180;
+const angle = (-135*Math.PI)/180;
 
 //  Create a new canvas for test image input. Get it's 2D context.
 let cnvsIn = document.createElement('canvas');
@@ -45,7 +45,12 @@ testImg.onload = function() {
     //  Run rotation algorithm on the ImageData object.
     //let imgRot = new Rotator(imgDataIn);
     imgRot.imgIn = imgDataIn;
+
+    let start = performance.now();
     let imgDataOut = imgRot.rotate(angle);
+    let finish = performance.now();
+
+    document.getElementById('status').innerText = (finish - start) + 'ms to execute.';
 
     //  Push resulting ImageData object to the output canvas.
     cntxOut.putImageData(imgDataOut, 0, 0);

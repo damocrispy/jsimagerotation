@@ -4,8 +4,30 @@ class Rotator {
       this.imgOut;   
    }
 
-   rotate = function (theta) {
-      
+   rotate = async function (theta) {
+      // POST the input ImageData object to Flask as a JSON frame that includes the rotation angle.
+      let response = await fetch('http://127.0.0.1:5000/', {
+         method: 'POST',
+         headers: {'Content-Type': 'application/json'},
+         body: JSON.stringify({
+            theta: theta,
+            data: this.imgIn.data,
+            width: this.imgIn.width,
+            height: this.imgIn.height
+         })
+      })
+      // Parse response as JSON.
+      .then(function (response) {
+         return response.json();
+      })
+      // Give us a look at the lovely JSON.
+      .then(function (json){
+         console.log(json['theta']);
+         console.log(json['width']);
+         console.log(json['height']);
+      });
+
+
    };
       /* 
       This rotation algorithm is based on the idea of inverse mapping - taking an output pixel

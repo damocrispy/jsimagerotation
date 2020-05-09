@@ -1,13 +1,26 @@
 from flask import Flask, request
+from flask_cors import CORS
+
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/', methods=['POST', 'GET'])
-def rotate():
+def getInput():
     if request.method == 'POST':
-        print('Received object ' + str(len(request.form)) + ' fields long.')
-        return 'Tell yo brotha, ya sista and yo mama too...', 200
+        imgIn = request.get_json()
+        
+        imgOut = rotate(imgIn)
+
+        #return 'Tell yo brotha, ya sista and yo mama too...', 200
+        return imgOut
+
     else:
-        return 'Didn\'t get a POST.', 200
+        return '...it\'s about to go down and you know just what to do.', 200
+
+def rotate(imgIn):
+    print(str(imgIn['theta']))
+
+    return imgIn
 
 if __name__ == '__main__':
     app.run()

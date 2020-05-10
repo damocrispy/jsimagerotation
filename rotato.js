@@ -11,9 +11,7 @@ class Rotator {
          headers: {'Content-Type': 'application/json'},
          body: JSON.stringify({
             theta: theta,
-            data: this.imgIn.data,
-            width: this.imgIn.width,
-            height: this.imgIn.height
+            image: this.imgIn
          })
       })
       // Parse response as JSON.
@@ -21,6 +19,7 @@ class Rotator {
          return response.json();
       })
       // Give us a look at the lovely JSON.
+      // !!!!!!!!!!!!!!!!!!   THAT THETA NEEDS TO BE CHANGED TO DATA AT SOME POINT  !!!!!!!!!!!!!!!!!!
       .then(function (json){
          console.log(json['theta']);
          console.log(json['width']);

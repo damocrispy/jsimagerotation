@@ -11,7 +11,7 @@ the HTML page thus showing input and output side-by-side.
  */
 
 //  Input angle. Convert to radians for rotation algorithm.
-const angle = (-135*Math.PI)/180;
+const angle = (60*Math.PI)/180;
 
 //  Create a new canvas for test image input. Get it's 2D context.
 let cnvsIn = document.createElement('canvas');
@@ -34,7 +34,7 @@ cnvsOut.height = newDims[1];
 //  Create an image object.
 let testImg = new Image();
 //  When test image is loaded wait for it to load before continuing.
-testImg.onload = async function() {
+testImg.onload = function() {
     //  Push the Image object to the input canvas.
     cntxIn.drawImage(testImg, 0, 0)
 
@@ -47,14 +47,22 @@ testImg.onload = async function() {
     imgRot.imgIn = imgDataIn;
 
     let start = performance.now();
-    let imgDataOut = await imgRot.rotate(angle);
-    let finish = performance.now();
+    //let imgDataOut = imgRot.rotate(angle);
+    imgRot.rotate(angle)
+        .then(imgDataOut => {
+            let finish = performance.now();
+            document.getElementById('status').innerText = (finish - start) + 'ms to execute.';
+            console.log(imgDataOut);
 
-    document.getElementById('status').innerText = (finish - start) + 'ms to execute.';
+            //  Push resulting ImageData object to the output canvas.
+            cntxOut.putImageData(imgDataOut, 0, 0);
+            document.body.appendChild(cnvsOut);
+        })
+        .catch(new Error('Something went arseways there.'));//err => console.log('Nope. Not that time.'))
+    
 
-    //  Push resulting ImageData object to the output canvas.
-    cntxOut.putImageData(imgDataOut, 0, 0);
-    document.body.appendChild(cnvsOut);
+    
+    
 
 };
 

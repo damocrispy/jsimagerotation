@@ -4,36 +4,49 @@ class Rotator {
       this.imgOut;
    }
 
-   rotate = async function (theta) {
-      // Convert from Uint8ClampedArray to regular array.
-      let imgData = Array.from(this.imgIn.data);
+   rotate = function (theta) {
+      // This function needs to return a promise so that the code that runs it will wait for it to complete.
+      return new Promise((resolve, reject) => {
 
-      // POST the input ImageData object to Flask as a JSON frame that includes the rotation angle.
-      let response = await fetch('http://127.0.0.1:5000/', {
-         method: 'POST',
-         headers: {'Content-Type': 'application/json'},
-         body: JSON.stringify({
-            theta: theta,
-            image: {
-               data: imgData,
-               width: this.imgIn.width,
-               height: this.imgIn.height
-            }
+         // Convert from Uint8ClampedArray to regular array.
+         let imgData = Array.from(this.imgIn.data);
+
+         // POST the input ImageData object to Flask as a JSON frame that includes the rotation angle.
+         let response = fetch('http://127.0.0.1:5000/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+               theta: theta,
+               image: {
+                  data: imgData,
+                  width: this.imgIn.width,
+                  height: this.imgIn.height
+               }
+            })
          })
-      })
-      // Parse response as JSON.
-      .then(function (response) {
-         return response.json();
-      })
-      // Give us a look at the lovely JSON.
-      .then(function (json){
-         var imgData = Uint8ClampedArray.from(json['data']);
-         var imgWidth = json['width'];
-         var imgHeight = json['height'];
-         var imgOut = new ImageData(imgData, imgWidth, imgHeight);
-         return imgOut = imgOut;
+         // Parse response as JSON.
+         .then(response => {
+            return response.json();
+         })
+         // Give us a look at the lovely JSON.
+         .then(json => {
+            var imgData = Uint8ClampedArray.from(json['data']);
+            var imgWidth = json['width'];
+            var imgHeight = json['height'];
+            var imgOut = new ImageData(imgData, imgWidth, imgHeight);
+            console.log(imgOut);
+
+            // Test to see if function has run successfully and return promise on that based.
+            if (imgOut.constructor.name == 'ImageData') {
+               resolve(imgOut);
+            }
+            else {
+               reject(new Error('Something went arseways there.'));
+            }
+            return imgOut;
+         });
       });
-   };
+   }
 
 
 

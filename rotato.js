@@ -1,17 +1,24 @@
 class Rotator {
    constructor (imgIn) {
       this.imgIn = imgIn;
-      this.imgOut;   
+      this.imgOut;
    }
 
    rotate = async function (theta) {
+      // Convert from Uint8ClampedArray to regular array.
+      let imgData = Array.from(this.imgIn.data);
+
       // POST the input ImageData object to Flask as a JSON frame that includes the rotation angle.
       let response = await fetch('http://127.0.0.1:5000/', {
          method: 'POST',
          headers: {'Content-Type': 'application/json'},
          body: JSON.stringify({
             theta: theta,
-            image: this.imgIn
+            image: {
+               data: imgData,
+               width: this.imgIn.width,
+               height: this.imgIn.height
+            }
          })
       })
       // Parse response as JSON.
@@ -19,15 +26,17 @@ class Rotator {
          return response.json();
       })
       // Give us a look at the lovely JSON.
-      // !!!!!!!!!!!!!!!!!!   THAT THETA NEEDS TO BE CHANGED TO DATA AT SOME POINT  !!!!!!!!!!!!!!!!!!
       .then(function (json){
-         console.log(json['theta']);
-         console.log(json['width']);
-         console.log(json['height']);
+         var imgData = Uint8ClampedArray.from(json['data']);
+         var imgWidth = json['width'];
+         var imgHeight = json['height'];
+         var imgOut = new ImageData(imgData, imgWidth, imgHeight);
+         return imgOut = imgOut;
       });
-
-
    };
+
+
+
       /* 
       This rotation algorithm is based on the idea of inverse mapping - taking an output pixel
       and calculating it's most likely input pixel, then copying RBA data from input to output.
@@ -100,6 +109,7 @@ class Rotator {
             }
          }
       }
+
    
       // Initialise output ImageData object with reconstructed data and correct dimensions.
       this.imgOut = new ImageData(arrayOut, newDims[0], newDims[1]);

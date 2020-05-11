@@ -34,7 +34,7 @@ cnvsOut.height = newDims[1];
 //  Create an image object.
 let testImg = new Image();
 //  When test image is loaded wait for it to load before continuing.
-testImg.onload = function() {
+testImg.onload = async function() {
     //  Push the Image object to the input canvas.
     cntxIn.drawImage(testImg, 0, 0)
 
@@ -47,7 +47,7 @@ testImg.onload = function() {
     imgRot.imgIn = imgDataIn;
 
     let start = performance.now();
-    let imgDataOut = imgRot.rotate(angle);
+    let imgDataOut = await imgRot.rotate(angle);
     let finish = performance.now();
 
     document.getElementById('status').innerText = (finish - start) + 'ms to execute.';

@@ -13,5 +13,12 @@ Algorithm uses inverse mapping as discussed [here](https://pythontic.com/image-p
 ## Development
 The codebase was developed in Visual Studio Code using the Live Server Extension to serve associated files ('/accenture/index.html' served on default port 5500). The algorithm was developed using a HTML page (included in repo) for input/output. This was viewed/processed in Firefox. The algorithm itself does not require a browser and can be exported for use in Node.js. Unit testing is performed by Jest. This requires that the algorithm can in fact be executed outside a browser.
 
+## Branches
+### master
+Conforms to project specification. More or less.
+
+### pytest
+Implements the rotation algorithm in Python with the ultimate goal of comparing performance. This uses Flask to receive image data from JS script and to respond with processed data. Using maths focused libraries (e.g. numpy) may help this to outperform JavaScript and will also take processing load off the browser JS engine by doing it on server (i.e. local dev machine).
+
 ## Status
 It has it's flaws. Don't we all? This is temporary.

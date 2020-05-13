@@ -1,3 +1,4 @@
 node_modules/
 package*
 test/
+pytest/__pychache__/

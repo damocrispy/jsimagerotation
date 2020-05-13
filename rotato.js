@@ -4,6 +4,7 @@ class Rotator {
       this.imgOut;   
    }
 
+   
    rotate = function (theta) {
       /*
       This rotation algorithm is based on the idea of inverse mapping - taking an output pixel

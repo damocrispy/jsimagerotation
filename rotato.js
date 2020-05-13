@@ -1,10 +1,9 @@
 class Rotator {
    constructor (imgIn) {
       this.imgIn = imgIn;
-      this.imgOut;   
+      this.imgOut;
    }
 
-   
    rotate = function (theta) {
       /*
       This rotation algorithm is based on the idea of inverse mapping - taking an output pixel
@@ -88,37 +87,50 @@ class Rotator {
       return this.imgOut;
    };
 
-   matMult = function (a, b) {
-      // Matrix multiplication. A matrix is represented as an array of arays.
-      // Dimensions of input matrices.
-      let arows = a.length; // Number of rows.
-      let acols = a[0].length; // Number of columns.
-      let brows = b.length;
-      let bcols = b[0].length;
-      if (acols != brows) {
-         console.log('Cannot multiply matrices.');
-         console.log('Check dimensions.');
-         return;
-      }
-      // Build empty resulting matrix of correct dimensions.
-      let result = new Array(arows);
-      for (let row = 0; row < arows; row++) {
-         result[row] = new Array(bcols);
-      }
-      // For every element in the resulting matrix calculate its value.
-      // Similar to what this guy did: https://www.codewithc.com/matrix-multiplication-in-c/
-      let element = 0;
-      for (let r = 0; r < arows; r++) {
-         for (let c = 0; c < bcols; c++) {
-            for (let k = 0; k < acols; k++) {
-               element += a[r][k] * b[k][c];
+   rotatePy = function (theta) {
+      // This function needs to return a promise so that the code that runs it will wait for it to complete.
+      return new Promise((resolve, reject) => {
+
+         // Convert from Uint8ClampedArray to regular array.
+         let imgData = Array.from(this.imgIn.data);
+
+         // POST the input ImageData object to Flask as a JSON frame that includes the rotation angle.
+         fetch('http://127.0.0.1:5000/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+               theta: theta,
+               image: {
+                  data: imgData,
+                  width: this.imgIn.width,
+                  height: this.imgIn.height
+               }
+            })
+         })
+         // Parse response as JSON.
+         .then(response => {
+            return response.json();
+         })
+         // Give us a look at the lovely JSON.
+         .then(json => {
+            var timeElapsed = json['time_elapsed'];
+
+            var imgData = Uint8ClampedArray.from(json['image']['data']);
+            var imgWidth = json['image']['width'];
+            var imgHeight = json['image']['height'];
+            var imgOut = new ImageData(imgData, imgWidth, imgHeight);
+
+            // Test to see if function has run successfully and return promise based on that.
+            if (imgOut.constructor.name == 'ImageData') {
+               resolve([imgOut, timeElapsed]);
             }
-            result[r][c] = element;
-            element = 0;
-         }
-      }
-      return result;
-   };
+            else {
+               reject(new Error('Something went arseways there.'));
+            }
+            //return [imgOut, timeElapsed];
+         });
+      });
+   }
 
    resize = function (width, height, angle) {
       // Find minimum enclosing dimensions of rotated rectangle.

@@ -11,7 +11,7 @@ the HTML page thus showing input and output side-by-side.
  */
 
 //  Input angle. Convert to radians for rotation algorithm.
-const angle = (-135*Math.PI)/180;
+const angle = (60*Math.PI)/180;
 
 //  Create a new canvas for test image input. Get it's 2D context.
 let cnvsIn = document.createElement('canvas');
@@ -20,11 +20,11 @@ let cntxIn = cnvsIn.getContext('2d');
 cnvsIn.width = 393;
 cnvsIn.height = 501;
 
-let imgRot = new Rotator(new ImageData(cnvsIn.width, cnvsIn.height));
-
 //  Create a new canvas for test image output. Get it's 2D context.
 let cnvsOut = document.createElement('canvas');
 let cntxOut = cnvsOut.getContext('2d');
+
+let imgRot = new Rotator(new ImageData(cnvsIn.width, cnvsIn.height));
 
 //  Resize canvas to fit rotated image.
 let newDims = imgRot.resize(cnvsIn.width, cnvsIn.height, angle);
@@ -39,22 +39,29 @@ testImg.onload = function() {
     cntxIn.drawImage(testImg, 0, 0)
 
     //  Pull an ImageData object from the input canvas.
-    //  This will be the input to the image rotation algorithm.
     let imgDataIn = cntxIn.getImageData(0, 0, cnvsIn.width, cnvsIn.height);
 
-    //  Run rotation algorithm on the ImageData object.
-    //let imgRot = new Rotator(imgDataIn);
+    //  Assign this to the input of the image rotation algorithm.
     imgRot.imgIn = imgDataIn;
 
+    //  Run rotation algorithm on the ImageData object.
     let start = performance.now();
-    let imgDataOut = imgRot.rotate(angle);
-    let finish = performance.now();
+    imgRot.rotatePy(angle)
+        .then(imgDataOut => {
+            //  Report rotation execution times.
+            let finish = performance.now();
+            document.getElementById('status1').innerText = 'Python, including transport: ' + (finish - start) + 'ms.';
+            document.getElementById('status2').innerText = 'Python, processing only: ' + imgDataOut[1] + 'ms.';
 
-    document.getElementById('status').innerText = (finish - start) + 'ms to execute.';
+            //  Push resulting ImageData object to the output canvas.
+            cntxOut.putImageData(imgDataOut[0], 0, 0);
+            document.body.appendChild(cnvsOut);
+        })
+        .catch(new Error('Something went arseways there.'));
+    
 
-    //  Push resulting ImageData object to the output canvas.
-    cntxOut.putImageData(imgDataOut, 0, 0);
-    document.body.appendChild(cnvsOut);
+    
+    
 
 };
 

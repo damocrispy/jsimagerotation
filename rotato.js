@@ -131,6 +131,38 @@ class Rotator {
       });
    };
 
+   matMult = function (a, b) {
+      // Matrix multiplication. A matrix is represented as an array of arays.
+      // Dimensions of input matrices.
+      let arows = a.length; // Number of rows.
+      let acols = a[0].length; // Number of columns.
+      let brows = b.length;
+      let bcols = b[0].length;
+      if (acols != brows) {
+         console.log('Cannot multiply matrices.');
+         console.log('Check dimensions.');
+         return;
+      }
+      // Build empty resulting matrix of correct dimensions.
+      let result = new Array(arows);
+      for (let row = 0; row < arows; row++) {
+         result[row] = new Array(bcols);
+      }
+      // For every element in the resulting matrix calculate its value.
+      // Similar to what this guy did: https://www.codewithc.com/matrix-multiplication-in-c/
+      let element = 0;
+      for (let r = 0; r < arows; r++) {
+         for (let c = 0; c < bcols; c++) {
+            for (let k = 0; k < acols; k++) {
+               element += a[r][k] * b[k][c];
+            }
+            result[r][c] = element;
+            element = 0;
+         }
+      }
+      return result;
+   };
+
    resize = function (width, height, angle) {
       // Find minimum enclosing dimensions of rotated rectangle.
       let newWidth = Math.abs(height*Math.sin(angle)) + Math.abs(width*Math.cos(angle));

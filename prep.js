@@ -1,14 +1,26 @@
 /* 
-Prepare the input for the image rotation algorithm.
-This file will pull an image fromt he HTML page,
-pull out the ImageData object that is required
-as an input to the algorithm in the project spec
-and then pass it as an argument to the rotation algorithm.
-This algorithm is executed by a member function of a
-'Rotator' class defined in the 'rotato.js' file.
-The algorithm returns an ImageData object which is pushed to
-the HTML page thus showing input and output side-by-side.
+Prepare the input for the image rotation algorithms.
+This file will load an image to the HTML page. An
+ImageData object is taken from this to be used as an
+input to the rotation algorithms, as required in the
+project spec. Several algorithms compared:
+
+o   Basic algorithm using a series of translations and a
+    rotation implemented using Canvas API
+    -   result displayed in HTML
+    -   present for reference
+o   Similar algorithm implemented in JavaScript
+o   Similar algorithm implemented in Python
+
+JS/Python algorithms are executed by a member function
+of a 'Rotator' class defined in the 'rotato.js' file.
+'rotateJS()' carries out the implementation in JavaScript
+while 'rotatePy()' uses fetch API to pass data to a Flask
+server which then calls the Python implementation of the
+algorithm. Execution times are displayed on HTML page.
  */
+
+
 
 //  Input angle. Convert to radians for rotation algorithm.
 const angle = (60*Math.PI)/180;
@@ -20,10 +32,11 @@ let cntxIn = cnvsIn.getContext('2d');
 let cnvsOut = document.createElement('canvas');
 let cntxOut = cnvsOut.getContext('2d');
 
-//  Resize canvases to match test image.
+//  Resize input canvas to match test image.
 cnvsIn.width = 393;
 cnvsIn.height = 501;
 
+//  Instantiate Rotator class. Object will be used later but for now just need resize() method.
 let imgRot = new Rotator(new ImageData(cnvsIn.width, cnvsIn.height));
 
 //  Resize canvas to fit rotated image.
@@ -46,8 +59,7 @@ cntxOut.rotate(angle);
 cntxOut.translate((-cnvsIn.width / 2), (-cnvsIn.height / 2));
 
 //  Display execution time.
-let canvasTime = performance.now() - startCanv;
-document.getElementById('status1').innerText = 'Canvas API (result displayed): ' + canvasTime + 'ms.';
+document.getElementById('status1').innerText = 'Canvas API (result displayed): ' + (performance.now() - startCanv) + 'ms.';
 
 /* End Canvas API   */
 
@@ -73,14 +85,17 @@ testImg.onload = function() {
 
     */
 
+   let startJS = performance.now();
+
+   let imgOutJS = imgRot.rotateJS(angle);
+
+    //  Display execution time.
+    let JSTime = performance.now() - startJS;
+    document.getElementById('status2').innerText = 'JavaScript: ' + (performance.now() - startJS) + 'ms.';
+
+    /*  End JavaScript Algorithm Implementation */
 
 
-    /*  Python Algorithm Implementation */
-
-    let startJS = performance.now();
-
-    imgOutJS = imgRot.rotateJS(angle);
-    console.log(imgOutJS);
 
     /*
 

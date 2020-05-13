@@ -4,7 +4,7 @@ class Rotator {
       this.imgOut;
    }
 
-   rotate = function (theta) {
+   rotateJS = function (theta) {
       /*
       This rotation algorithm is based on the idea of inverse mapping - taking an output pixel
       and calculating it's most likely input pixel, then copying RBA data from input to output.
@@ -127,10 +127,9 @@ class Rotator {
             else {
                reject(new Error('Something went arseways there.'));
             }
-            //return [imgOut, timeElapsed];
          });
       });
-   }
+   };
 
    resize = function (width, height, angle) {
       // Find minimum enclosing dimensions of rotated rectangle.
@@ -142,8 +141,8 @@ class Rotator {
       newHeight = Math.round(newHeight);
       
       return [newWidth, newHeight];
-   }
-}
+   };
+};
 
 /* 
 Attempt to export the class 'Rotator'.
@@ -158,4 +157,4 @@ try {
 }
 catch(e) {
    console.log('Failed to export. You running this in-browser? That\'s yer problem there.');
-}
+};

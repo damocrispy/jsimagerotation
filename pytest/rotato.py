@@ -1,23 +1,33 @@
 from flask import Flask, request
 from flask_cors import CORS
 import numpy as np
+import time
 
+#  It's a Flask!
 app = Flask(__name__)
 CORS(app)
 
 @app.route('/', methods=['POST', 'GET'])
 def getInput():
    if request.method == 'POST':
+      #  Convert request body to JSON.
       img_in = request.get_json()
+
+      #  Run rotation algorithm.
       img_out = rotate(img_in)
 
       return img_out, 200
 
    else:
-      return 'Shoulda sent a GET.', 200
+      return 'Shoulda sent a POST.', 200
 
 def rotate(img_in):
-   
+   '''
+   Rotation algorithm.
+   '''
+
+   start = int(time.time() * 1000)
+
    #  Find dimensions of output image.
    new_dims = resize(img_in)
 
@@ -69,19 +79,23 @@ def rotate(img_in):
 
          #  Assign values from source pixel to current output pixel.
          for i in range(4):
-            #  If calculated source pixels fall outside source image, set values to 0.
+            #  Check that calculated source pixel falls inside source image.
             if (pxl_in[0,0] >= 0 and pxl_in[0,0] < width_in and pxl_in[1,0] >= 0 and pxl_in[1,0] < height_in):
                data_out[((y * new_dims[0]) + x) * 4 + i] = data_in[((pxl_in[1,0] * width_in) + pxl_in[0,0]) * 4 + i]
+            #  Otherwise set pixel value to 0.
             else:
                data_out[((y * new_dims[0]) + x) * 4 + i] = 0
 
-   #  Initialise output ImageData object with reconstructed data and correct dimensions.
+   #  Package the bones of an ImageData JS object into a JSON field along with the local time to execute..
    img_out = {
-      'data': data_out,
-      'width': new_dims[0],
-      'height': new_dims[1]
+      'time_elapsed': int(time.time() * 1000) - start,
+      'image': {
+         'data': data_out,
+         'width': new_dims[0],
+         'height': new_dims[1]
+      }      
    }
-   
+
    return img_out
 
 def resize(img_data):

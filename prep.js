@@ -12,6 +12,8 @@ o   Basic algorithm using a series of translations and a
     -   present for reference
 o   Similar algorithm implemented in JavaScript
 o   Similar algorithm implemented in Python
+o   Rotation carried out by SciPy ndimage.rotate. This
+    uses an algorithm based on spline interpolation
 
 JS/Python algorithms are executed by a member function
 of a 'Rotator' class defined in the 'rotato.js' file.

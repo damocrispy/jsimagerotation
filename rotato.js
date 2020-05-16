@@ -154,9 +154,8 @@ class Rotator {
          // Give us a look at the lovely JSON.
          .then(json => {
             let timeElapsed = json['time_elapsed'];
-            let dataArray = json['image']['data'];
-            console.log(dataArray.length);
-            let imgData = Uint8ClampedArray.from(dataArray);
+            
+            let imgData = Uint8ClampedArray.from(json['image']['data']);
             let imgWidth = json['image']['width'];
             let imgHeight = json['image']['height'];
             let imgOut = new ImageData(imgData, imgWidth, imgHeight);

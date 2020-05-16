@@ -6,7 +6,6 @@ import time
 
 #  It's a Flask!
 app = Flask(__name__)
-app.debug = True
 CORS(app)
 
 @app.route('/rotpy', methods=['POST', 'GET'])
@@ -103,18 +102,19 @@ def rotateSciPy():
    data_in = img_in['image']['data']
    width_in = int(img_in['image']['width'])
    height_in = int(img_in['image']['height'])
+   
+   #  Convert 1D array to a 3D array using given height and width of input image
+   #  and four layers of pixel bytes (RGBA). This conversion is required by ndimage.rotate().
+   data_in_3D = np.reshape(data_in, (height_in, width_in, 4), order='C')
+   #  Rotate 3D array.
+   data_out_3D = ndimage.rotate(np.array(data_in_3D), theta)
+   new_dims = np.shape(data_out_3D)
+   #  Convert 3D array back to a 1D array for JSONisation.
+   data_out = np.reshape(data_out_3D, (new_dims[0] * new_dims[1] * new_dims[2]))
 
-   #  Convert one-dimension array to a two-dimension array using given height and width of input image,
-   #  also accounting for 4 btes per pixel. This conversion is required by ndimage.rotate().
-   data_in_2D = np.reshape(data_in, (height_in, width_in*4))
-
-   data_out_2D = ndimage.rotate(np.array(data_in_2D), theta)
-   new_dims = np.shape(data_out_2D)
-   data_out = np.reshape(data_out_2D, (1, (new_dims[0] * new_dims[1])))
-
-      #  Package the bones of an ImageData JS object into a JSON field along with the local time to execute..
+   #  Package the bones of an ImageData JS object into a JSON field along with the local time to execute..
    img_out = {
-      'time_elapsed': int(time.time() * 1000) - start,
+      'time_elapsed': (int(time.time() * 1000) - start),
       'image': {
          'data': data_out.tolist(), #  Convert from ndarray to list
          'width': new_dims[1],

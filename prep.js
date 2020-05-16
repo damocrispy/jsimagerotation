@@ -6,7 +6,8 @@ input to the rotation algorithms, as required in the
 project spec. Several algorithms compared:
 
 o   Basic algorithm using a series of translations and a
-    rotation implemented using Canvas API
+    rotation to implement a Euclidean transformation.
+    Uses Canvas API
     -   result displayed in HTML
     -   present for reference
 o   Similar algorithm implemented in JavaScript
@@ -111,9 +112,28 @@ testImg.onload = function() {
             document.getElementById('status3').innerText = 'Python, including transport: ' + (performance.now() - startPy) + 'ms.';
             document.getElementById('status4').innerText = 'Python, processing only: ' + imgDataOut[1] + 'ms.';
         })
-        .catch(new Error('Something went arseways there.'));
+        .catch(new Error('Something went arseways in rotatePy().'));
 
     /*  End Python Algorithm Implementation */
+
+
+    /*
+
+    SciPy Algorithm Implementation
+
+    */
+   
+   let startSciPy = performance.now();
+
+   imgRot.rotateSciPy(angle)
+       .then(imgDataOut => {
+           //  Display execution time.
+           document.getElementById('status5').innerText = 'SciPy, including transport: ' + (performance.now() - startPy) + 'ms.';
+           document.getElementById('status6').innerText = 'SciPy, processing only: ' + imgDataOut[1] + 'ms.';
+       })
+       .catch(new Error('Something went arseways in rotateSciPy().'));
+
+   /*  End Python Algorithm Implementation */    
 
 };
 

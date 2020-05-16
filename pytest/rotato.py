@@ -1,30 +1,20 @@
 from flask import Flask, request
 from flask_cors import CORS
 import numpy as np
+from scipy import ndimage
 import time
 
 #  It's a Flask!
 app = Flask(__name__)
+app.debug = True
 CORS(app)
 
-@app.route('/', methods=['POST', 'GET'])
-def getInput():
-   if request.method == 'POST':
-      #  Convert request body to JSON.
-      img_in = request.get_json()
+@app.route('/rotpy', methods=['POST', 'GET'])
+def rotatePy():
+   #  Basic rotation algorithm.
 
-      #  Run rotation algorithm.
-      img_out = rotate(img_in)
-
-      return img_out, 200
-
-   else:
-      return 'Shoulda sent a POST.', 200
-
-def rotate(img_in):
-   '''
-   Rotation algorithm.
-   '''
+   #  Convert request body to JSON.
+   img_in = request.get_json()
 
    start = int(time.time() * 1000)
 
@@ -64,7 +54,7 @@ def rotate(img_in):
    #  4. Multiply the above transformations to find combined transformation matrix.
    trans_rot = np.matmul(rot_mat, trans_to_origin)
    trans_mat = np.matmul(trans_from_origin, trans_rot)
-
+   
    #  For each pixel in output image, find corresponding pixel in input and copy pixel value.
    for y in range(new_dims[1]):
       for x in range(new_dims[0]):
@@ -85,7 +75,7 @@ def rotate(img_in):
             #  Otherwise set pixel value to 0.
             else:
                data_out[((y * new_dims[0]) + x) * 4 + i] = 0
-
+   
    #  Package the bones of an ImageData JS object into a JSON field along with the local time to execute..
    img_out = {
       'time_elapsed': int(time.time() * 1000) - start,
@@ -96,7 +86,43 @@ def rotate(img_in):
       }      
    }
 
-   return img_out
+   return img_out, 200
+
+
+@app.route('/rotscipy', methods=['POST', 'GET'])
+def rotateSciPy():
+
+   #  Convert request body to JSON.
+   img_in = request.get_json()
+   
+   start = int(time.time() * 1000)
+
+   #  Pull values from received img_in JSON object which contains angle and the JS ImageData object.
+   #  Assign them more readable variable names.
+   theta = img_in['theta']
+   data_in = img_in['image']['data']
+   width_in = int(img_in['image']['width'])
+   height_in = int(img_in['image']['height'])
+
+   #  Convert one-dimension array to a two-dimension array using given height and width of input image,
+   #  also accounting for 4 btes per pixel. This conversion is required by ndimage.rotate().
+   data_in_2D = np.reshape(data_in, (height_in, width_in*4))
+
+   data_out_2D = ndimage.rotate(np.array(data_in_2D), theta)
+   new_dims = np.shape(data_out_2D)
+   data_out = np.reshape(data_out_2D, (1, (new_dims[0] * new_dims[1])))
+
+      #  Package the bones of an ImageData JS object into a JSON field along with the local time to execute..
+   img_out = {
+      'time_elapsed': int(time.time() * 1000) - start,
+      'image': {
+         'data': data_out.tolist(), #  Convert from ndarray to list
+         'width': new_dims[1],
+         'height': new_dims[0]
+      }      
+   }
+
+   return img_out, 200
 
 def resize(img_data):
 

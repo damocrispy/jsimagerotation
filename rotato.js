@@ -23,7 +23,6 @@ class Rotator {
       combination of matrices to model a series of transformations here:
       https://www.mauriciopoppe.com/notes/computer-graphics/transformation-matrices/combining-transformations/
        */
-      let start = performance.now();
    
       // Find dimensions of output image.
       let newDims = this.resize(this.imgIn.width, this.imgIn.height, theta);
@@ -54,7 +53,7 @@ class Rotator {
       // 4. Multiply the above transformations to find combined transformation matrix.
       let transRot = this.matMult(rotMat, transToOrigin);
       let transMat = this.matMult(transFromOrigin, transRot);
-   
+      
       // For each pixel in output image, find corresponding pixel in input and copy pixel value.
       for (let y = 0; y < newDims[1]; y++) {
          for (let x = 0; x < newDims[0]; x++) {
@@ -77,12 +76,9 @@ class Rotator {
             }
          }
       }
-   
+      
       // Initialise output ImageData object with reconstructed data and correct dimensions.
       this.imgOut = new ImageData(arrayOut, newDims[0], newDims[1]);
-   
-      let finish = performance.now();
-      console.log((finish - start) + 'ms to execute.');
    
       return this.imgOut;
    };
@@ -95,7 +91,7 @@ class Rotator {
          let imgData = Array.from(this.imgIn.data);
 
          // POST the input ImageData object to Flask as a JSON frame that includes the rotation angle.
-         fetch('http://127.0.0.1:5000/', {
+         fetch('http://127.0.0.1:5000/rotpy', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -113,12 +109,57 @@ class Rotator {
          })
          // Give us a look at the lovely JSON.
          .then(json => {
-            var timeElapsed = json['time_elapsed'];
+            let timeElapsed = json['time_elapsed'];
 
-            var imgData = Uint8ClampedArray.from(json['image']['data']);
-            var imgWidth = json['image']['width'];
-            var imgHeight = json['image']['height'];
-            var imgOut = new ImageData(imgData, imgWidth, imgHeight);
+            let imgData = Uint8ClampedArray.from(json['image']['data']);
+            let imgWidth = json['image']['width'];
+            let imgHeight = json['image']['height'];
+            let imgOut = new ImageData(imgData, imgWidth, imgHeight);
+
+            // Test to see if function has run successfully and return promise based on that.
+            if (imgOut.constructor.name == 'ImageData') {
+               resolve([imgOut, timeElapsed]);
+            }
+            else {
+               reject(new Error('Something went arseways there.'));
+            }
+         });
+      });
+   };
+
+   rotateSciPy = function (theta) {
+      // This function needs to return a promise so that the code that runs it will wait for it to complete.
+      return new Promise((resolve, reject) => {
+
+         // Convert from Uint8ClampedArray to regular array.
+         let imgData = Array.from(this.imgIn.data);
+
+         // POST the input ImageData object to Flask as a JSON frame that includes the rotation angle.
+         fetch('http://127.0.0.1:5000/rotscipy', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+               theta: theta,
+               image: {
+                  data: imgData,
+                  width: this.imgIn.width,
+                  height: this.imgIn.height
+               }
+            })
+         })
+         // Parse response as JSON.
+         .then(response => {
+            return response.json();
+         })
+         // Give us a look at the lovely JSON.
+         .then(json => {
+            let timeElapsed = json['time_elapsed'];
+            let dataArray = json['image']['data'];
+            console.log(dataArray.length);
+            let imgData = Uint8ClampedArray.from(dataArray);
+            let imgWidth = json['image']['width'];
+            let imgHeight = json['image']['height'];
+            let imgOut = new ImageData(imgData, imgWidth, imgHeight);
 
             // Test to see if function has run successfully and return promise based on that.
             if (imgOut.constructor.name == 'ImageData') {

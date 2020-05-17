@@ -26,7 +26,7 @@ algorithm. Execution times are displayed on HTML page.
 
 
 //  Input angle. Convert to radians for rotation algorithm.
-const angle = (60*Math.PI)/180;
+const angle = (-30*Math.PI)/180;
 
 //  Create two new canvases for test image input and output. Get their 2D contexts.
 let cnvsIn = document.createElement('canvas');
@@ -62,7 +62,7 @@ cntxOut.rotate(angle);
 cntxOut.translate((-cnvsIn.width / 2), (-cnvsIn.height / 2));
 
 //  Display execution time.
-document.getElementById('status1').innerText = 'Canvas API (result displayed): ' + (performance.now() - startCanv) + 'ms.';
+document.getElementById('canTime').innerText = (performance.now() - startCanv);
 
 /* End Canvas API   */
 
@@ -93,8 +93,7 @@ testImg.onload = function() {
    let imgOutJS = imgRot.rotateJS(angle);
 
     //  Display execution time.
-    let JSTime = performance.now() - startJS;
-    document.getElementById('status2').innerText = 'JavaScript: ' + (performance.now() - startJS) + 'ms.';
+    document.getElementById('jsTime').innerText = (performance.now() - startJS);
 
     /*  End JavaScript Algorithm Implementation */
 
@@ -108,11 +107,15 @@ testImg.onload = function() {
    
     let startPy = performance.now();
 
+    let imgOutPy;
+
     imgRot.rotatePy(angle)
-        .then(imgDataOut => {
+        .then(result => {
             //  Display execution time.
-            document.getElementById('status3').innerText = 'Python, including transport: ' + (performance.now() - startPy) + 'ms.';
-            document.getElementById('status4').innerText = 'Python, processing only: ' + imgDataOut[1] + 'ms.';
+            document.getElementById('pyTime').innerText = (performance.now() - startPy);
+            document.getElementById('pyExTime').innerText = result[1];
+
+            imgOutPy = result[0];
         })
         .catch(new Error('Something went arseways in rotatePy().'));
 
@@ -127,11 +130,15 @@ testImg.onload = function() {
    
    let startSciPy = performance.now();
 
+   let imgOutSciPy;
+
    imgRot.rotateSciPy(angle)
-       .then(imgDataOut => {
+       .then(result => {
            //  Display execution time.
-           document.getElementById('status5').innerText = 'SciPy, including transport: ' + (performance.now() - startPy) + 'ms.';
-           document.getElementById('status6').innerText = 'SciPy, processing only: ' + imgDataOut[1] + 'ms.';
+           document.getElementById('scipyTime').innerText = (performance.now() - startPy);
+           document.getElementById('scipyExTime').innerText = result[1];
+
+           imgOutSciPy = result[0];
        })
        .catch(new Error('Something went arseways in rotateSciPy().'));
 

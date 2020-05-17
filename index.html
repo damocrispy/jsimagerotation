@@ -5,15 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giz a job, lads.</title>
 </head>
+<!-- Table blatantly robbed from https://www.w3schools.com/html/html_tables.asp. I did change some stuff to be fair. -->
+<style>
+    body {
+        background-image: url('https://images.homedepot-static.com/catalog/productImages/300/f6/f65ca2e5-d390-4cac-9871-1c5c0fb10cd7_300.jpg');
+        }
+
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 50%;
+        }
+    
+    h1 {
+        font-family: arial, sans-serif;
+        color:#333333;
+        margin:0;
+    }
+    
+    td, th {
+        border: 2px solid #888888;
+        text-align: right;
+        padding: 6px;
+        }
+</style>
+
 <body>
-    <style>body {background-image: url('https://images.homedepot-static.com/catalog/productImages/300/f6/f65ca2e5-d390-4cac-9871-1c5c0fb10cd7_300.jpg');}</style> 
-    <h1 style="font-size:50px;color:#333333;margin:0;">RGBA Rotation!</h1>
-    <p id='status1' style="font-size:20px;color:#333333;margin:0;">Running...</p>
-    <p id='status2' style="font-size:20px;color:#333333;margin:0;">Running...</p>
-    <p id='status3' style="font-size:20px;color:#333333;margin:0;">Running...</p>
-    <p id='status4' style="font-size:20px;color:#333333;margin:0;">Running...</p>
-    <p id='status5' style="font-size:20px;color:#333333;margin:0;">Running...</p>
-    <p id='status6' style="font-size:20px;color:#333333;margin:0;">Running...</p>
+    <style></style> 
+    <h1>RGBA Rotation!</h1>
+    <table>
+        <tr>
+            <th style="text-align:left">Algorithm</th>
+            <th style="text-align:left">Execution Time (ms)</th>
+            <th style="text-align:left">Mean Squared Error</th>
+        </tr>
+        <tr>
+            <td style="text-align:left">Canvas API</td>
+            <td id="canTime">Running...</td>
+            <td id="canMSE">Running...</td>
+        </tr>
+        <tr>
+            <td style="text-align:left">Euclidean Transformation (JavaScript)</td>
+            <td id="jsTime">Running...</td>
+            <td id="jsMSE">Running...</td>
+        </tr>
+        <tr>
+            <td style="text-align:left">Euclidean Transformation (Python)</td>
+            <td id="pyTime">Running...</td>
+            <td id="pyMSE">Running...</td>
+        </tr>
+        <tr>
+            <td style="text-align:left">Euclidean Transformation (Python) - excluding transport</td>
+            <td id="pyExTime">Running...</td>
+            <td id="pyExMSE">Running...</td>
+        </tr>
+        <tr>
+            <td style="text-align:left">SciPy (Python)</td>
+            <td id="scipyTime">Running...</td>
+            <td id="scipyMSE">Running...</td>
+        </tr>
+        <tr>
+            <td style="text-align:left">SciPy (Python) - excluding transport</td>
+            <td id="scipyExTime">Running...</td>
+            <td id="scipyExMSE">Running...</td>
+        </tr>
+    </table>
     <script type="module" src="http://localhost:5500/accenture/prep.js"></script>
     <script type="application/javascript" src="http://localhost:5500/accenture/rotato.js"></script>
 </body>

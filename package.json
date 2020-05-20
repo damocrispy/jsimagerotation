@@ -20,5 +20,7 @@
   "devDependencies": {
     "jest": "^25.5.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "canvas": "^2.6.1"
+  }
 }

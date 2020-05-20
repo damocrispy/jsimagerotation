@@ -37,18 +37,18 @@ class Rotator {
       // Form transformation matrices.
       // 1. Translate pixel (vector) so that rotation is about origin.
       let transToOrigin = [[1, 0, -cntrX],
-      [0, 1, -cntrY],
-      [0, 0, 1]];
+         [0, 1, -cntrY],
+         [0, 0, 1]];
    
       // 2. Rotate pixel about origin.
       let rotMat = [[Math.cos(theta), Math.sin(theta), 0],
-      [-Math.sin(theta), Math.cos(theta), 0],
-      [0, 0, 1]];
+         [-Math.sin(theta), Math.cos(theta), 0],
+         [0, 0, 1]];
    
       // 3. Reverse original translation.
       let transFromOrigin = [[1, 0, this.imgIn.width / 2],
-      [0, 1, this.imgIn.height / 2],
-      [0, 0, 1]];
+         [0, 1, this.imgIn.height / 2],
+         [0, 0, 1]];
    
       // 4. Multiply the above transformations to find combined transformation matrix.
       let transRot = this.matMult(rotMat, transToOrigin);
@@ -76,7 +76,7 @@ class Rotator {
             }
          }
       }
-      
+
       // Initialise output ImageData object with reconstructed data and correct dimensions.
       this.imgOut = new ImageData(arrayOut, newDims[0], newDims[1]);
    
@@ -114,11 +114,11 @@ class Rotator {
             let imgData = Uint8ClampedArray.from(json['image']['data']);
             let imgWidth = json['image']['width'];
             let imgHeight = json['image']['height'];
-            let imgOut = new ImageData(imgData, imgWidth, imgHeight);
+            this.imgOut = new ImageData(imgData, imgWidth, imgHeight);
 
             // Test to see if function has run successfully and return promise based on that.
-            if (imgOut.constructor.name == 'ImageData') {
-               resolve([imgOut, timeElapsed]);
+            if (this.imgOut.constructor.name == 'ImageData') {
+               resolve([this.imgOut, timeElapsed]);
             }
             else {
                reject(new Error('Something went arseways there.'));
@@ -158,17 +158,44 @@ class Rotator {
             let imgData = Uint8ClampedArray.from(json['image']['data']);
             let imgWidth = json['image']['width'];
             let imgHeight = json['image']['height'];
-            let imgOut = new ImageData(imgData, imgWidth, imgHeight);
+            this.imgOut = new ImageData(imgData, imgWidth, imgHeight);
 
             // Test to see if function has run successfully and return promise based on that.
-            if (imgOut.constructor.name == 'ImageData') {
-               resolve([imgOut, timeElapsed]);
+            if (this.imgOut.constructor.name == 'ImageData') {
+               resolve([this.imgOut, timeElapsed]);
             }
             else {
                reject(new Error('Something went arseways there.'));
             }
          });
       });
+   };
+
+   mse = function (imgRef) {
+
+      // Convert from Uint8ClampedArray to regular array.
+      let imgData = Array.from(this.imgOut.data);
+      let imgRefData = Array.from(imgRef.data);
+
+      // If data arrays have different lengths, return an error message.
+      if (imgData.length != imgRefData.length) {
+         let msg = "Image sizes do not match. (" + imgRef.width + " x " + imgRef.height + ") vs. (" + this.imgOut.width + " x " + this.imgOut.height + ")";
+         return msg;
+      }
+
+      let imgSqErr = [];
+      // For each element in the reference image data array find the difference
+      // between it and the corresponding element from the array being tested.
+      // Add this error, squared, to the array 'imgSqErr'.
+      imgRefData.forEach((elem, i, ) => {
+         imgSqErr.push((elem - imgData[i]) ** 2);
+      })
+    
+      let sumSqErr = imgSqErr.reduce((acc, curr) => acc + curr);
+      
+      let mse = sumSqErr / imgData.length;
+      
+      return mse;
    };
 
    matMult = function (a, b) {

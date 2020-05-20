@@ -8,7 +8,7 @@ import time
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/rotpy', methods=['POST', 'GET'])
+@app.route('/rotpy', methods=['POST'])
 def rotatePy():
    #  Basic rotation algorithm.
 
@@ -88,7 +88,7 @@ def rotatePy():
    return img_out, 200
 
 
-@app.route('/rotscipy', methods=['POST', 'GET'])
+@app.route('/rotscipy', methods=['POST'])
 def rotateSciPy():
 
    #  Convert request body to JSON.
@@ -98,16 +98,16 @@ def rotateSciPy():
 
    #  Pull values from received img_in JSON object which contains angle and the JS ImageData object.
    #  Assign them more readable variable names.
-   theta = img_in['theta']
+   theta = -(img_in['theta'] * 180) / np.pi
    data_in = img_in['image']['data']
    width_in = int(img_in['image']['width'])
    height_in = int(img_in['image']['height'])
-   
+
    #  Convert 1D array to a 3D array using given height and width of input image
    #  and four layers of pixel bytes (RGBA). This conversion is required by ndimage.rotate().
    data_in_3D = np.reshape(data_in, (height_in, width_in, 4), order='C')
    #  Rotate 3D array.
-   data_out_3D = ndimage.rotate(np.array(data_in_3D), theta)
+   data_out_3D = ndimage.rotate(data_in_3D, theta)
    new_dims = np.shape(data_out_3D)
    #  Convert 3D array back to a 1D array for JSONisation.
    data_out = np.reshape(data_out_3D, (new_dims[0] * new_dims[1] * new_dims[2]))
@@ -123,6 +123,19 @@ def rotateSciPy():
    }
 
    return img_out, 200
+
+
+@app.route('/mse', methods=['POST'])
+def mean_sq_err(imgRef, imgTest):
+   #  Unpack image JSON objects from request, including Canvas API result.
+   #  for each except CanvasAPI result find MSE
+
+   imgDataRef = imgRef['image']
+   imgDataTest = imgTest['image']
+
+   
+   return 200#mean square error
+
 
 def resize(img_data):
 

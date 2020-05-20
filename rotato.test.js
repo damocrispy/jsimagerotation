@@ -1,26 +1,27 @@
 const Rotator = require('./rotato');
+const Canvas = require('canvas');
 
-const testRotator = new Rotator();
+//  Create a test input ImageData object.
+let imgData = Uint8ClampedArray.from(new Array(250 * 650 * 4).fill(1));
+let imgDataIn = new Canvas.ImageData(imgData, 250, 650);
+//  Create a test Rotator object using test ImageData
+let testRotator = new Rotator(imgDataIn);
 
-//  Build test case input object - mimic structure of ImageData object.
-/* let angle = 1.05;    //  Radians.
-testRotator.imgIn = {
-    'data': [0] * 250 * 650 * 4,
-    'width': 250,
-    'height': 650
-};
+let angle = 1.05;    //  Radians.
 
-imgOut = {
-    'data': [0] * 688 * 540 * 4,
-    'width': 688,
-    'height': 540
-};
+//  Create an expected output ImageData object.
+imgData = Uint8ClampedArray.from(new Array(688 * 540 * 4).fill(0));
+let imgDataOut = new Canvas.ImageData(imgData, 688, 540);
 
-test ('Rotates image by specified angle', async () => {
-    expect.assertions(1);
-    expect(await testRotator.rotate(angle)).resolves.toEqual(imgOut);
+/* test ('Rotate image by specified angle', async () => {
+    //expect.assertions(1);
+    expect(await testRotator.rotateJS(angle)).resolves.toEqual(imgDataOut);
     }); */
 
-test ('Finds new width and height of a rotated recatngle', () => {
+test ('Find new width and height of a rotated recatngle', () => {
     expect(testRotator.resize(250, 650, 1.05)).toEqual([688, 540]);
 });
+
+test ('Find mean squared error of two images', () => {
+    expect(testRotator.mse(imgDataOut)).toEqual(1);
+})
